@@ -1,0 +1,504 @@
+@startuml
+skinparam linetype ortho
+package fragments {
+    class FragmentCalendarioEventos implements Fragment{
+        - model: ItemsViewModel
+        - var adaptador: AdaptadorEventosCalendarios
+        - binding: FragmentCalendarioEventosBinding
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        - fun cargarAdaptador()
+    }
+    class FragmentCalendarioPrestamos implements Fragment {
+        - model: ItemsViewModel
+        - adaptador: AdaptadorPrestamosCalendario
+        - binding: FragmentCalendarioPrestamosBinding
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        - fun cargarAdaptador()
+        - fun cargarAdaptador(listaPrestamos: ArrayList<Prestamo> )
+    }
+    class FragmentCambiarContrasenya implements Fragment {
+        - model: ItemsViewModel
+        - binding: FragmentCambiarContrasenyaBinding
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentContacto implements Fragment {
+        - binding: FragmentContactoBinding
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        + fun llamar()
+        + fun enviarCorreo()
+    }
+    class FragmentDetalleEvento implements Fragment {
+        - binding: FragmentDetalleEventoBinding
+        - model: ItemsViewModel
+        - mItem: Int?
+        - tipo: Int?
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        - override fun onSaveInstanceState(outState: Bundle)
+    }
+    class FragmentDetalleLibro implements Fragment {
+        - binding: FragmentDetalleLibroBinding
+        - model: ItemsViewModel
+        - mItem: Int?
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        - fun createNofitication()
+        - fun createNotificationChannel()
+        + override fun onSaveInstanceState(outState: Bundle)
+    }
+    class FragmentEstatico implements Fragment {
+        - lateinit binding: FragmentEstaticoBinding
+        - val model: ItemsViewModel
+        - mItem: Int?
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentPrestamos implements Fragment {
+
+        - binding: FragmentPrestamosBinding
+        - model: ItemsViewModel
+        - adaptador: Adaptador
+        + fun cargarAdaptador(prestamos: ArrayList<Prestamo>)
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentReservas implements Fragment {
+        - swipeDetector: SwipeDetector
+        - binding: FragmentReservasBinding
+        - model: ItemsViewModel
+        - posicion
+        - fun createNofitication(dateString: String, id: Int, titulo: String)
+        - fun cancelNotification(id: Int)
+        - fun createNotificationChannel()
+        + fun cargaReservas()
+        + fun cargarAdaptador(reservas: ArrayList<Reservas>)
+        - fun cargarAdaptador(prestamos: ArrayList<Prestamo>)
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentPrincipal implements Fragment {
+
+        - model: ItemsViewModel
+        - binding: FragmentPrincipalBinding
+        - botonFiltrarPulsado: Boolean
+        - adaptador: AdaptadorEventos?
+        - fun cargarAdaptador(prestamos: ArrayList<Prestamo>)
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentPerfil implements Fragment {
+        - binding: FragmentPerfilBinding
+        - bindingDialogo: DialogoModificaCorreoBinding
+        - bindingDialogoCategoriaInteres: DialogoCategoriaInteresBinding
+        - model: ItemsViewModel
+        - resultadoCamara: ActivityResultLauncher<Intent>
+        - resultadoGaleria: ActivityResultLauncher<Intent>
+        - registerPermisosTomarFoto: ActivityResultLauncher<String>
+        - registerPermisosStorage: ActivityResultLauncher<String>
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+        + override fun onCreateContextMenu(menu: ContextMenu,v: View, menuInfo: ContextMenu.ContextMenuInfo?)
+        - override fun onContextItemSelected(item: MenuItem): Boolean
+        - fun actualizaImg()
+        - fun borrarFoto()
+        - fun tomarFoto()
+        - fun llamar()
+        - fun enviarCorreo()
+        - fun creaContratos()
+    }
+    class FragmentLibros implements Fragment, SearchView.OnQueryTextListener, android.widget.SearchView.OnQueryTextListener {
+        - binding: FragmentEstaticoBinding
+        - val model: ItemsViewModel
+        - mItem: Int?
+        + override fun onCreate(savedInstanceState: Bundle?)
+        + override fun onCreateView(inflater: LayoutInflater, container:
+        ViewGroup?,savedInstanceState: Bundle?) : View?
+    }
+    class FragmentLogin implements Fragment{
+        - binding: FragmentEstaticoBinding
+        - val model: ItemsViewModel
+        + fun onCreate(savedInstanceState: Bundle?)
+        + fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?)
+
+    }
+}
+package apirest {
+    object ApiRestAdapter {
+        - cookie: String
+        + fun crearRetrofit()
+        + fun cargaSocio2(user: String, token: String): Deferred<Socio?>
+        + fun cambiaCorreoElectronico(correo: String, idSocio: Int, token: String): Deferred<Mensaje?>
+        + fun cambiaContrasenya(user: String,newPass: String,oldPass: String,token: String): Deferred<Mensaje?>
+        + fun cambiaCategorias(categorias: String, idSocio: Int, token: String): Deferred<Mensaje?>
+        + fun cambiaCategorias(categorias: String, idSocio: Int, token: String): Deferred<Mensaje?>
+        + fun cambiaImagenPerfil(imagen: String, idSocio: Int, token: String): Deferred<Mensaje?>
+        + fun logout()
+        + fun loginJWT(usuario: Usuario): Deferred<Token?>
+        + fun loginJWT(usuario: Usuario)
+        - fun limpiarCookie(cookie: String?): String?
+        + fun cargaUnidadLibroReserva(isbn: String): Deferred<Libro>
+        + fun cargaUnidadLibroPrestamo(isbn: String): Deferred<Libro>
+        + fun cargaId(): Deferred<JSessionId>
+        + fun cargaCatalogo(): Deferred<ArrayList<Libros>>
+        + fun cargaLibro(id: Int): Deferred<Libros>
+        + fun cargaLibrosFiltrados(palabraABuscar: String,filtroBusqueda: FiltroBuscarLibro): Deferred<ArrayList<Libros>>
+        + fun cargaEventos(): Deferred<ArrayList<Evento>>
+        + fun cargaEventosPorFecha(fecha: String): Deferred<ArrayList<Evento>>
+        + fun cargaPrestamosNoFinalizadosSocio(idSocio: Int, token: String): Deferred<ArrayList<Prestamo>>
+        + fun cargaPrestamosPorFecha(fecha: String,idSocio: Int,token: String): Deferred<ArrayList<Prestamo>>
+        + fun cargaHistorialPrestamos(idSocio: Int, token: String): Deferred<ArrayList<Prestamo>>
+        + fun reservaLibro(idLibro: Int,idSocio: Int, token: String): Deferred<Mensaje>
+        + fun poneNotification(idReserva: Int, token: String): Deferred<Mensaje>
+        + fun quitaNotification(idReserva: Int, token: String): Deferred<Mensaje>
+        + fun quitaReserva(idReserva: Int, idLibro: Int, token: String): Deferred<Mensaje>
+        +  fun cargaReservasNoFinalizadosSocio(idSocio: Int, token: String): Deferred<ArrayList<Reservas>>
+        + fun cargaReservas(idSocio: Int, token: String): Deferred<ArrayList<Reservas>>
+    }
+    interface ProveedorServicio{
+        + fun id(): Response<JSessionId>
+        + fun muestraLibrosBiblioteca(): Response<ArrayList<Libros>>
+        + fun muestraLibroPorId(id: Int): Response<Libros>
+        + suspend fun buscaLibrosTodasCategorias(palabra: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorTitulo(titulo: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorEditorial(editorial: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorAutor(autores: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorPublicacion(anyo: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorISBN(isbn: String): Response<ArrayList<Libros>>
+        + fun buscaLibrosPorCategoria(categoria: String): Response<ArrayList<Libros>>
+        + fun buscaReservaPorISBN(isbn: String): Response<ArrayList<Libros>>
+        + fun buscaPrestamoPorISBN(isbn: String): Response<Libro>
+        + fun muestraEventosBiblioteca(): Response<ArrayList<Evento>>
+        + fun muestraEventosPorFecha(fecha: String): Response<ArrayList<Evento>>
+        + fun muestraPrestamosSocio(idSocio: Int, userCookie: String, token: String): Response<ArrayList<Prestamo>>
+        + fun muestraPrestamosNoFinalizadosSocio(idSocio: Int,userCookie: String, token: String): Response<ArrayList<Prestamo>>
+        + fun muestraPrestamosPorFecha(fecha: String,idSocio: Int,userCookie: String,token: String): Response<ArrayList<Prestamo>>
+        + fun addReserva(idSocio: Int, idLibro: Int, userCookie: String, token: String): Response<Mensaje>
+        + fun muestraReservasDisponiblesSocio(idSocio: Int, userCookie: String, token: String): Response<ArrayList<Reservas>>
+        + fun muestraTodasReservasSocio(idSocio: Int, userCookie: String, token: String): Response<ArrayList<Reservas>>
+        + fun poneNotification(idReserva: Int, userCookie: String, token: String): Response<Mensaje>
+        + fun quitaNotification( idReserva: Int, userCookie: String, token: String): Response<Mensaje>
+        + fun quitaReserva(idReserva: Int, idLibro: Int, userCookie: String, token: String): Response<Mensaje>
+        + fun getSocio(dni: String): Response<Socio>
+        + fun getSocio(dni: String, userCookie: String, token: String): Response<Mensaje>
+        + fun cambiaPassword(dni: String, newPass: String, oldPass: String, userCookie: String, token: String): Response<Mensaje>
+        + fun editaSocio(id: Int,correo: String,userCookie: String,token: String): Response<Mensaje>
+        + fun editaCategoriasSocio(id: Int, categorias: String, userCookie: String, token: String): Response<Mensaje>
+        + fun editaSocioImagen(id: Int, imagen: String, userCookie: String, token: String): Response<Mensaje>
+        + fun loginJWT(user: Usuario): Response<Token>
+        + fun logout(): Response<Sesion>
+        + fun destroySession(): Response<Sesion>
+    }
+}
+package notificaciones {
+    class ServicioAlarma implements BroadcastReceiver{
+        + override fun onReceive(context: Context?, intent: Intent?)
+        - fun generateNotification(context: Context, id: Int, titulo: String?)
+    }
+    class ServicioAlarmaReserva implements BroadcastReceiver{
+        + override fun onReceive(p0: Context?, p1: Intent?)
+        - fun generateNotification(context: Context)
+    }
+}
+package utils {
+    enum FiltroBuscarLibro as "FiltroBuscarLibro" <<Enumeration>> {
+        Autores, Titulo, Categoria, Editorial, ISBN, AnyoPublicacion, Todo
+    }
+    object ImagenUtilidad {
+        + fun convertirURLBitmap(url: String?, context: Context): Bitmap?
+        + fun convertirStringBitmap(imagen: String?): Bitmap
+        + fun convertirRecursoBitmap(recurso: Int, context: Context): Bitmap
+        + fun ConvertirImagenString(bitmap: Bitmap): String
+    }
+    class SwipeDetector implements OnTouchListener {
+        + enum Action {LR,RL,TB,BT,None}
+        - downX: Float
+        - downY: Float
+        - upX: Float
+        - upY: Float
+        + action: Action
+        + fun swipeDetected(): Boolean
+        + override fun onTouch(v: View, event: MotionEvent): Boolean
+        - HORIZONTAL_MIN_DISTANCE: int
+        - VERTICAL_MIN_DISTANCE: int
+    }
+}
+package auth {
+    class Sesion{
+        + id_session: String
+        + mensaje: String
+        + usuario: String
+        + rol: String
+    }
+    class Token implements Parcelable{
+        + JWT: String
+    }
+    class Usuario {
+        + username: String
+        + password: String
+    }
+}
+package clases {
+    class Evento implements Parcelable{
+        + idEvento: String
+        + titulo: String
+        + descripcion: String
+        + imagen: String
+        + fechaPublicacion: String
+        + fechaEvento: String
+    }
+    class JSessionId implements Parcelable {
+        + session : String
+    }
+    class Libro implements Parcelable {
+        + disponible: Boolean
+        + idLibro: Int
+        + isbn: String
+        + reservado: Boolean
+    }
+    class Libros implements Parcelable {
+        + isbn:String
+        + titulo:String
+        + autores: String
+        + descripcion: String
+        + paginas: Int
+        + categoria: String
+        + subcategorias: String
+        + anyoPublicacion: Int
+        + editorial: String
+        + idioma: String
+        + imagen: String
+    }
+    class Mensaje implements Parcelable {
+        + mensaje: String
+    }
+    class Prestamo implements Parcelable {
+        + fechaDevolucion: String
+        + fechaPrestamo: String
+        + fechaTope: String
+        + idLibro: Int
+        + idPrestamo: Int
+        + idSocio: Int
+    }
+    class Reservas implements Parcelable {
+        + fechaReserva: String
+        + finalizada: Boolean
+        + idReserva: Int
+        + libroId: Int
+        + socioId: Int
+        + notificacion: Boolean
+    }
+    class Socio implements Parcelable {
+        + apellidos: String
+        + rol: String
+        + categoriasInteres: String
+        + contrasenya: String
+        + correo: String
+        + direccion: String
+        + dni: String
+        + fechaNacimiento: String
+        + idSocio: Int
+        + telefono: Int
+        + imagen: String
+        + nombre: String
+    }
+}
+package viewmodel{
+    class ItemsViewModel implements ViewModel{
+        - libro : MutableLiveData<Libros>
+        - unidadLibro : MutableLiveData<Libro>
+        - socio : MutableLiveData<Socio?>
+        - mensaje : MutableLiveData<Mensaje>
+        - Libro : MutableLiveData<ArrayList<Libros>>
+        - prestamos : MutableLiveData<ArrayList<Prestamo>>
+        - prestamosNoFinalizados : MutableLiveData<ArrayList<Prestamo>>
+        - libroFiltrado : MutableLiveData<ArrayList<Libros>>
+        - libroMuestra : MutableLiveData<ArrayList<Libros>>
+        - reservas : MutableLiveData<ArrayList<Reservas>>
+        - reservasNoFinalizadas : MutableLiveData<ArrayList<Reservas>>
+        - estadoFiltroLibro : MutableLiveData<FiltroBuscarLibro>
+        - loginJWT : MutableLiveData<Token>
+        - cookie : MutableLiveData<String>
+        - visibilidadCategorias : MutableLiveData<Boolean>
+        - prestamosFiltrados : MutableLiveData<ArrayList<Prestamo>>
+    }
+}
+package adaptadores{
+    class AdaptadorEventos implements RecyclerView, View.OnClickListener {
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderEventos
+        + fun onBindViewHolder(holder: HolderEventos, position: Int)
+        + fun getItemCount(): Int
+        + fun onMiClick(listener: View.OnClickListener)
+        + fun onClick(p0: View?)
+    }
+    class HolderEventos implements RecyclerView{
+        + textTitulo: TextView
+        + textDescripcion: TextView
+        + textFecha: TextView
+        + imagen: ImageView
+        + v: View
+        + foto: Boolean
+        + fun bind(entity: Evento)
+    }
+    class AdaptadorEventosCalendarios{
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderEventos
+        + fun onBindViewHolder(holder: HolderEventos, position: Int)
+        + fun getItemCount(): Int
+        + fun onMiClick(listener: View.OnClickListener)
+        + fun onClick(p0: View?)
+    }
+    class HolderEventosCalendario implements RecyclerView{
+        + textTitulo: TextView
+        + fun bind(entity: Evento)
+    }
+    class AdaptadorLibros implements RecyclerView, View.OnClickListener {
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderLibros
+        + fun onBindViewHolder(holder: HolderLibros, position: Int)
+        + fun getItemCount(): Int
+        + fun onMiClick(listener: View.OnClickListener)
+        + fun onClick(p0: View?)
+    }
+    class HolderLibros implements RecyclerView{
+        + textTitulo: TextView
+        + textAutores: TextView
+        + textIsbn: TextView
+        + imagen: ImageView
+        + v: View
+        + fun bind(entity: Evento)
+    }
+    class AdaptadorPrestamos implements RecyclerView, View.OnClickListener {
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderPrestamos
+        + fun onBindViewHolder(holder: HolderPrestamos, position: Int)
+        + fun getItemCount(): Int
+        + fun onClick(p0: View?)
+    }
+    class HolderPrestamos implements RecyclerView{
+        + FechaDevolucionFinalRecycler: TextView
+        + fechaDevueltaLinear: LinearLayout
+        + fechaTopeLinear: LinearLayout
+        + FechaDevolucionRecycler: TextView
+        + FechaPrestamoRecycler: TextView
+        + textDescripcion: TextView
+        + mostrarDatos: TextView
+        - var view: View
+        + imagen: ImageView
+        + linea: CardView
+        + textTitulo: TextView
+        + fun bind(entity: Prestamo)
+    }
+    class AdaptadorPrestamosCalendario implements RecyclerView, View.OnClickListener {
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderPrestamosCalendario
+        + fun onBindViewHolder(holder: HolderPrestamosCalendario, position: Int)
+        + fun getItemCount(): Int
+        + fun onClick(p0: View?)
+    }
+    class HolderPrestamosCalendario implements RecyclerView{
+        + textTitulo: TextView
+        + fun bind(entity: Prestamo)
+    }
+    class AdaptadorReservas implements RecyclerView, View.OnClickListener {
+        - listenerClick: View.OnClickListener
+        + onCreateViewHolder(viewGroup: ViewGroup, i: Int): HolderReservas
+        + fun onBindViewHolder(holder: HolderReservas, position: Int)
+        + fun setOnTouchListener(listener: View.OnTouchListener)
+        + fun onTouch(v: View?, event: MotionEvent?)
+        + fun getItemCount(): Int
+        + fun onClick(p0: View?)
+    }
+    class HolderReservas implements RecyclerView{
+        + textTitulo: TextView
+        + disponibilidad: TextView
+        + fechaReserva: TextView
+        + imagen: ImageView
+        + imagenNotification: ImageView
+        + linea: CardView
+        - view: View
+        + fun bind(entity: Prestamo)
+    }
+}
+
+AdaptadorEventos +-u- HolderEventos
+AdaptadorEventosCalendarios +-u- HolderEventosCalendario
+AdaptadorLibros +-u- HolderLibros
+AdaptadorPrestamos +-u- HolderPrestamos
+AdaptadorReservas +-u- HolderReservas
+AdaptadorPrestamosCalendario +-u- HolderPrestamosCalendario
+AdaptadorEventosCalendarios "1" *-d- "*" Evento 
+AdaptadorReservas "1" *-u- "*" Reservas 
+HolderEventosCalendario "1" *-d- "1" Evento 
+AdaptadorEventos "1" *-d- "*" Evento 
+AdaptadorLibros "1" *-d- "*" Libros 
+HolderLibros "1" *-d- "1" Libros 
+HolderPrestamos "1" *-d- "*" ApiRestAdapter 
+HolderReservas "1" *-d- "*" ApiRestAdapter 
+
+ItemsViewModel "1" *-d- "*" Prestamo 
+ItemsViewModel "1" *-d- "*" Reservas 
+ItemsViewModel "1" *-d- "*" Libros 
+ItemsViewModel "1" *-d- "*" Libro 
+ItemsViewModel "1" *-d- "1" Socio 
+ItemsViewModel "1" *-d- "1" Mensaje 
+ItemsViewModel "1" *-d- "1" Token 
+FragmentCalendarioPrestamos "1" *-d- "1" ItemsViewModel 
+FragmentCambiarContrasenya "1" *-d- "1" ItemsViewModel 
+FragmentDetalleEvento "1" *-d- "1" ItemsViewModel 
+FragmentDetalleLibro "1" *-d- "1" ItemsViewModel 
+FragmentDetalleLibro "1" *-u- "1" ServicioAlarmaReserva 
+FragmentEstatico "1" *-d- "1" ItemsViewModel 
+FragmentEstatico "1" *-d- "1" ApiRestAdapter 
+FragmentLibros "1" *-d- "1" ItemsViewModel 
+FragmentLogin "1" *-d- "1" ItemsViewModel 
+FragmentLogin "1" *-d- "1" ApiRestAdapter
+FragmentLogin "1" *-l- "1" Socio 
+FragmentLogin "1" *-r- "1" Token 
+FragmentPerfil "1" *-r- "1" ItemsViewModel
+FragmentPerfil "1" *-r- "*" Reservas: contains
+FragmentPerfil "1" *-r- "*" Prestamo: contains
+FragmentPerfil "1" *-r- "1" Socio: contains
+FragmentPrestamos "1" *-r- "*" Prestamo: contains
+FragmentPrestamos "1" *-r- "1" ItemsViewModel 
+FragmentPrincipal "1" *-r- "1" ItemsViewModel
+FragmentReservas "1" *-d- "1" ItemsViewModel 
+FragmentReservas "1" *-d- "1" SwipeDetector 
+ProveedorServicio "1" *-d- "1" Socio: contains
+ProveedorServicio "1" *-d- "*" Libro: contains
+ProveedorServicio "1" *-d- "*" Libros: contains
+ProveedorServicio "1" *-d- "*" Prestamo: contains
+ProveedorServicio "1" *-d- "*" Reservas: contains
+ProveedorServicio "1" *-d- "*" Evento
+ProveedorServicio "1" *-d- "*" Mensaje
+ProveedorServicio "1" *-d- "*" Token
+ProveedorServicio "1" *-d- "*" Usuario
+ProveedorServicio "1" *-d- "*" Sesion
+ApiRestAdapter "1" *-d- "1" Token
+ApiRestAdapter "1" *-d- "1" Usuario
+ApiRestAdapter "1" *-d- "1" Sesion
+ApiRestAdapter "1" *-d- "*" Libro
+ApiRestAdapter "1" *-d- "*" Libros
+ApiRestAdapter "1" *-d- "*" Prestamo
+ApiRestAdapter "1" *-d- "*" Reservas
+ApiRestAdapter "1" *-d- "1" Mensaje
+ApiRestAdapter "1" *-d- "1" Token
+AdaptadorEventos "1" *-d- "1" ImagenUtilidad
+AdaptadorLibros "1" *-d- "1" ImagenUtilidad
+FragmentLibros "1" *-d- "1" FiltroBuscarLibro
+ApiRestAdapter "1" *-d- "1" FiltroBuscarLibro
+@enduml
