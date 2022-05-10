@@ -360,6 +360,23 @@ package ViewModel{
         + CamposCorrectos()
         + ExaminarImagen()
     }
+    class EventosUserControlVM extends ObservableRecipient{
+        - servicioAzure : ServicioAzure
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        - filtrosRuta : String
+        - eventoNuevo : Evento
+        - fecha : DateTime
+        - RefrescaListaCommand : RelayCommand
+        - AddEventoCommand : RelayCommand
+        - EditarEventoCommand : RelayCommand
+        - EliminarEventoCommand : RelayCommand
+        + AddEventoWindowVM()
+        - RefrescaLista()
+        - AddEvento()
+        - EditaEvento()
+        - EliminaEvento()
+    }
     class DialogoEditarEventoVM extends ObservableRecipient{
         - servicioAzure : ServicioAzure
         - servicioDialogos : ServicioDialogos
@@ -395,7 +412,7 @@ package ViewModel{
         + DialogoSolicitarLibroVM()
         + Solicita()
     }
-    class DialogoEliminarPrestamoInterbibliotecarioVM extends ObservableRecipient{
+    class DialogoFinalizarPrestamoInterbibliotecarioVM extends ObservableRecipient{
         - servicioDialogos : ServicioDialogos
         - prestamoAFinalizar : PrestamoInterbibliotecario
         - api : ApiService
@@ -452,7 +469,7 @@ package ViewModel{
         + BuscaSocio()
         + CreaReserva()
     }
-    class DialogoCreaReservaVM extends ObservableRecipient{
+    class DialogoEditaLibroVM extends ObservableRecipient{
         - servicioDialogos : ServicioDialogos
         + libroAEditar : Libros
         - filtrosRuta : String
@@ -802,4 +819,18 @@ SociosUserControlVM "1" *-d- "*" ElementoSeguridad
 SociosUserControlVM "*" *-d- "*" Evento 
 SociosUserControlVM "1" *-d- "*" ApiService 
 MainWindowVM "1" *-d- "*" NavigationService 
+Root "*" *-d- "*" Item 
+AccessInfo "1" *-d- "*" Epub 
+AccessInfo "1" *-d- "*" Pdf 
+Item "1" *-u- "*" VolumeInfo 
+Item "1" *-u- "*" SaleInfo 
+Item "1" *-u- "*" AccessInfo 
+Item "1" *-u- "*" SearchInfo 
+Item "1" *-u- "*" SearchInfo 
+SaleInfo "1" *-u- "*" ListPrice 
+SaleInfo "1" *-u- "*" RetailPrice 
+SaleInfo "*" *-u- "*" Offer 
+VolumeInfo "*" *-l- "*" IndustryIdentifier 
+VolumeInfo "1" *-l- "*" PanelizationSummary 
+VolumeInfo "1" *-l- "*" ImageLinks 
 @enduml
