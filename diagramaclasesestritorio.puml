@@ -1,0 +1,805 @@
+@startuml BiblioappEscritorio
+skinparam linetype ortho
+package clases {
+    class Evento{
+        + descripcion: String
+        + fechaEvento: String
+        + fechaPublicacion: String
+        + idEvento: Integer
+        + imagen: String
+        + titulo: String
+    }
+    class GridPrestamos{
+        + dniSocio: String
+        + fechaDevolucion: String
+        + fechaPrestamo: String
+        + fechaTope: String
+        + idLibro: Integer
+        + idPrestamo: Integer
+        + imagenPortada: String
+        + isbn: String
+        + nombreSocio: String
+        + tituloLibro: String
+    }
+    class GridReservas{
+        + dniSocio: String
+        + fechaReserva: String
+        + finalizada: Boolean
+        + idLibro: Integer
+        + idReserva: Integer
+        + imagenPortada: String
+        + isbn: String
+        + nombreSocio: String
+        + tituloLibro: String
+    }
+    class JWTClass{
+        + JWT: String
+    }
+    class Libro{
+        + isLibro: Integer
+        + isbn: String
+        + disponible: Boolean
+        + reservado: Boolean
+    }
+    class Libros{
+        + anyoPublicacion: Integer
+        + autores: String
+        + categoria: String
+        + descripcion: String
+        + editorial: String
+        + idioma: String
+        + imagen: String
+        + isbn: String
+        + paginas: Integer
+        + subcategorias: String
+        + titulo: String
+    }
+    class Mensaje{
+        + mensaje: String
+    }
+    class Prestamo{
+        + fechaDevolucion: String
+        + fechaPrestamo: String
+        + fechaTope: String
+        + idLibro: Integer
+        + idPrestamo: Integer
+        + idSocio: Integer
+    }
+    class PrestamoInterbibliotecario{
+        + finalizada: Boolean
+        + idInterbibliotecario: Integer
+        + isbn: String
+        + titulo: String
+    }
+    class Reserva{
+        + fechaReserva: String
+        + finalizada: Boolean
+        + idReserva: Integer
+        + libroId: Integer
+        + notificacion: Boolean
+        + socioId: Integer
+    }
+    class Socio{
+        + apellidos: String
+        + categoriasInteres: String
+        + contrasenya: String
+        + correo: String
+        + direccion: String
+        + dni: String
+        + idSocio: Integer
+        + imagen: String
+        + nombre: String
+        + rol: String
+        + fechaNacimiento: String
+        + telefono: Integer
+    }
+
+    class UnidadesLibros{
+        + unidadesTotales : Integer
+        + unidadesReservadas : Integer
+        + unidadesDisponiblesPrestamo : Integer
+    }
+}
+package Api{
+    class ApiService{
+        + GetElementoSeguridad() : ElementoSeguridad
+        + GetApiKey(cookie: RestResponseCookie) : String
+        + CheckApiKey(cookie: RestResponseCookie) : CheckJWT
+        + CreateSesion() : ElementoSeguridad
+        + MuestraTodosLosLibros() : ObservableCollection<Libros>
+        + GetLibroPorId(elementoSeguridad: ElementoSeguridad, idLibro: Integer) : Libros
+        + CreaLibro(elementoSeguridad: ElementoSeguridad, libro: Libros) : String
+        + EditaLibro(elementoSeguridad: ElementoSeguridad, libro: Libros) : String
+        + EliminaLibros(elementoSeguridad: ElementoSeguridad, isbn: String) : String
+        + GetUnidadesReservadasLibroPorId(isbn: String) : Integer
+        + GetUnidadesDisponiblesLibroPorId(isbn: String) : Integer
+        + GetLibroDisponiblePorIsbn(isbn: String) : ObservableCollection<Libro>
+        + GetLibroDisponibleReservaPorIsbn(isbn: String) : Libro
+        + GetUnidadesLibros(isbn: String) : UnidadesLibros
+        + GetUnidadesTotalesLibroPorId(isbn: String) : Integer
+        + DisponibleBorrar(elementoSeguridad : ElementoSeguridad, isbn: String) : Boolean
+        + MarcaUnidadComoNoDisponibleReserva(elementoSeguridad : ElementoSeguridad, idLibro: Integer) : String
+        + MarcaUnidadComoDisponibleReserva(elementoSeguridad : ElementoSeguridad, idLibro: Integer) : String
+        + MarcaUnidadComoNoDisponible(elementoSeguridad : ElementoSeguridad, idLibro: Integer) : String
+        + MarcaUnidadComoDisponible(elementoSeguridad : ElementoSeguridad, idLibro: Integer) : String
+        + CreaUnidadLibro(elementoSeguridad : ElementoSeguridad, isbn: String) : String
+        + EliminaUnidadDeLibro(elementoSeguridad : ElementoSeguridad, isbn: String) : String
+        + EliminaTodasLasUnidadesDeLibro(elementoSeguridad : ElementoSeguridad, isbn: String) : String
+        + MuestraTodosLosEventos() : ObservableCollection<Evento>
+        + BuscaEventoPorFecha(fecha : String) : ObservableCollection<Evento>
+        + CreaEventos(elementoSeguridad: ElementoSeguridad, evento: Evento) : String
+        + EditaEventos(elementoSeguridad: ElementoSeguridad, evento: Evento) : String
+        + MuestraTodosLosSocios(elementoSeguridad: ElementoSeguridad) : ObservableCollection<Socio>
+        + GetSocioPorId(elementoSeguridad: ElementoSeguridad, idSocio : Integer) : Socio
+        + GetSocioPorDni(elementoSeguridad: ElementoSeguridad, dni : String) : Socio
+        + RestablecePass(elementoSeguridad: ElementoSeguridad, idSocio : Integer) : Socio
+        + CreaSocio(elementoSeguridad: ElementoSeguridad, socio : Socio) : Socio
+        + EditaSocio(elementoSeguridad: ElementoSeguridad, socio : Socio) : Socio
+        + EditaSocio(elementoSeguridad: ElementoSeguridad, socio : Socio) : Socio
+        + EliminaSocios(elementoSeguridad: ElementoSeguridad, socio : Socio) : Socio
+        + MuestraTodosLosPrestamos(elementoSeguridad: ElementoSeguridad) : ObservableCollection<Prestamo>
+        + MuestraTodosLosPrestamosGrid(elementoSeguridad: ElementoSeguridad) : ObservableCollection<GridPrestamos>
+        + CreaPrestamo(elementoSeguridad: ElementoSeguridad, prestamo: Prestamo) : String
+        + GetUnidadesDePrestamosSinFinalizarSocio(elementoSeguridad: ElementoSeguridad, idSocio: Integer) : Integer
+        + BuscaPrestamosNoFinalizadosPorSocio(elementoSeguridad: ElementoSeguridad, idSocio: Integer) : ObservableCollection<Prestamo>
+        + FinalizaPrestamo(elementoSeguridad: ElementoSeguridad, idPrestamo: Integer) : String
+        + EliminaPrestamo(elementoSeguridad: ElementoSeguridad, idPrestamo: Integer) : String
+        + MuestraTodosLosRegistrosInterbiblitecarios(elementoSeguridad: ElementoSeguridad) : ObservableCollection<PrestamoInterbibliotecario>
+        + CreaRegistroInterbiblitecario(elementoSeguridad: ElementoSeguridad, prestamo: PrestamoInterbibliotecario) : String
+        + EditaRegistroInterbiblitecario(elementoSeguridad: ElementoSeguridad, prestamo: PrestamoInterbibliotecario) : String
+        + EliminaRegistroInterbiblitecario(elementoSeguridad: ElementoSeguridad, idRegistro: Integer) : String
+        + MuestraTodasLasReservas(elementoSeguridad: ElementoSeguridad) : ObservableCollection<Reserva>
+        + MuestraTodosLosReservasGrid(elementoSeguridad: ElementoSeguridad) : ObservableCollection<GridReservas>
+        + FinalizaReserva(elementoSeguridad: ElementoSeguridad, idReserva : Integer, idLibro : Integer) : String
+        + BuscaReservasNoFinalizadasPorSocio(elementoSeguridad: ElementoSeguridad, idSocio : Integer) : ObservableCollection<Reserva>
+        + CreaReserva(elementoSeguridad: ElementoSeguridad, idSocio : Integer, idLibro : Integer) : String
+        + EliminaReservas(elementoSeguridad: ElementoSeguridad, idReserva : Integer) : String
+    }
+    class CheckJWT{
+        + Subject : String
+        + Issuer : String
+        + IssuedAt : String
+        + Expiration : String
+        + usuario : String
+        + id_sesion_recibida : String
+        + id_sesion_actual : String
+        + validate_session : Boolean
+        + validate_expiration : Boolean
+        + validate : Boolean
+        + resul : String
+    }
+    class ElementoSeguridad{
+        + Apikey : String
+        + Cookie : RestResponseCookie
+        + Session : String
+    }
+}
+package ExternalApi{
+    class AccessInfo{
+        + country : String
+        + viewability : String
+        + embeddable : Boolean
+        + publicDomain : Boolean
+        + textToSpeechPermission : String
+        + epub : Epub
+        + pdf : Pdf
+        + webReaderLink : String
+        + accessViewStatus : String
+        + embeddable : Boolean
+    }
+    class Epub{
+        + acsTokenLink : String
+        + isAvailable : Boolean
+    }
+    class ImageLinks{
+        + smallThumbnail : String
+        + thumbnail : String
+    }
+    class IndustryIdentifier{
+        + type : String
+        + identifier : String
+    }
+    class Item{
+        + kind : String
+        + id : String
+        + etag : String
+        + selfLink : String
+        + volumeInfo : VolumeInfo
+        + saleInfo : SaleInfo
+        + accessInfo : AccessInfo
+        + searchInfo : SearchInfo
+    }
+    class ListPrice{
+        + amount : double
+        + currencyCode : String
+        + amountInMicros : Integer
+    }
+    class Offer{
+        + finskyOfferType : Integer
+        + listPrice : ListPrice
+        + retailPrice : RetailPrice
+        + giftable : Boolean
+    }
+    class PanelizationSummary{
+        + containsEpubBubbles : Boolean
+        + containsImageBubbles : Boolean
+    }
+    class Pdf{
+        + isAvailable : Boolean
+        + acsTokenLink : String
+    }
+    class ReadingModes{
+        + text : Boolean
+        + image : Boolean
+    }
+    class RetailPrice{
+        + amount : Double
+        + currencyCode : String
+        + amountInMicros : Integer
+    }
+    class Root{
+        + kind : String
+        + totalItems : Integer
+        + items : List<Item>
+    }
+    class SaleInfo{
+        + country : String
+        + saleability : String
+        + isEbook : Boolean
+        + listPrice : ListPrice
+        + retailPrice : RetailPrice
+        + buyLink : String
+        + offers : List<Offer>
+    }
+    class SearchInfo{
+        + textSnippet : String
+    }
+    class VolumeInfo{
+        + title : String
+        + subtitle : String
+        + authors : List<String>
+        + publisher : String
+        + publishedDate : String
+        + description : String
+        + industryIdentifiers : List<IndustryIdentifier>
+        + readingModes : ReadingModes
+        + pageCount : Integer
+        + printType : String
+        + categories : List<string>
+        + averageRating : Double
+        + ratingsCount : Integer
+        + maturityRating : String
+        + allowAnonLogging : Boolean
+        + contentVersion : String
+        + panelizationSummary : PanelizationSummary
+        + imageLinks : ImageLinks
+        + language : String
+        + previewLink : String
+        + infoLink : String
+        + canonicalVolumeLink : String
+    }
+}
+package Servicios{
+    class ExternalApiService{
+        + MuestraTodosLosLibros(cadenaABuscar: String) : Root
+        + MuestraUnLibro(cadenaABuscar: String) : VolumeInfo
+    }
+    class NavigationService{
+        + listaLibros : LibrosUserControl
+        + listaSocios : SociosUserControl
+        + listaReservas : ReservasUserControl
+        + listaEventos : EventosUserControl
+        + listaPrestamos : PrestamosUserControl
+        + inicio : InicioUserControl
+        + interbibliotecario : PrestamoInterbibliotecarioUserControl
+        + registroInterbibliotecario : RegistroPrestamoInterbiblitoecario
+        + AbrirLibrosUserControl() : UserControl
+        + AbrirSociosUserControl() : UserControl
+        + AbrirEventosUserControl() : UserControl
+        + AbrirReservasUserControl() : UserControl
+        + AbrirPrestamosUserControl() : UserControl
+        + AbrirInicioUserControl() : UserControl
+        + AbrirPrestamoInterbibliotecarioUserControl() : UserControl
+        + AbrirRegistroPrestamoInterbiblitoecario() : UserControl
+    }
+    class ServicioAzure{
+        + GuardarImagen(rutaImagen : String) : String
+    }
+    class ServicioDialogos{
+        + AbrirArchivoDialogo(filtro: String)
+        + MensajeError(tituloMessageBox: String, mensajeError : String)
+        + MensajeInformativo(tituloMessageBox: String, mensajeInformativo : String)
+        + AbrirDialogoEliminarSocio()
+        + AbrirDialogoEliminarLibro()
+        + AbrirDialogoFinalizaPrestamo()
+        + AbrirDialogoFinalizaReserva()
+        + AbrirDialogoEliminarPrestamo()
+        + AbrirDialogoEliminarReserva()
+        + AbrirDialogoEliminarEvento()
+        + AbrirDialogoEditarEvento()
+        + AbrirDialogoAddPrestamo()
+        + AbrirDialogoAddReserva()
+        + AbrirDialogoRestablecePass()
+        + AbrirDialogoAddLibro(): Boolean
+        + AbrirDialogoEditarLibro(): Boolean
+        + AbrirDialogoEliminarPrestamoInter(): Boolean
+        + AbrirDialogoFinalizarPrestamoInter(): Boolean
+        + AbrirDialogoDialogoSolicitarLibro(): Boolean
+        + CargarDialogoAddSocio(): Boolean
+        + CargarDialogoEditaSocio(): Boolean
+        + CargarVentanaAddEvento(): Boolean
+        + CargarVentanaAddEvento() : Boolean
+    }
+    class ServicioMensajeria{
+        + class SocioSeleccionadoMessage extends RequestMessage<Socio> { }
+        + class LibroSeleccionadoMessage extends RequestMessage<Libros> { }
+        + class SeleccionadaMessage extends RequestMessage<Reserva> { }
+        + class PrestamoSeleccionadoMessage extends RequestMessage<Prestamo> { }
+        + class PrestamoGridPrestamosSeleccionadoMessage extends RequestMessage<GridPrestamos> { }
+        + class PrestamoGridPrestamosSeleccionadoMessage extends RequestMessage<Reserva> { }
+        + class GridReservasSeleccionadaMessage extends RequestMessage<GridReservas> { }
+        + class EventoSeleccionadoMessage extends RequestMessage<Evento> { }
+        + class SesionApiMessage extends RequestMessage<ElementoSeguridad> { }
+        + class PrestamoInterbibliotecarioMessage extends RequestMessage<Item> { }
+        + class PrestamoInterbibliotecarioRegistroMessage extends RequestMessage<PrestamoInterbibliotecario> { }
+    }
+}
+package ViewModel{
+
+    class AddEventoWindowVM extends ObservableRecipient{
+        - servicioAzure : ServicioAzure
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        - filtrosRuta : String
+        - eventoNuevo : Evento
+        - fecha : DateTime
+        - AddEventoCommand : RelayCommand
+        - ExaminarImagenCommand : RelayCommand
+        + AddEventoWindowVM()
+        + AddEvento()
+        + CamposCorrectos()
+        + ExaminarImagen()
+    }
+    class DialogoEditarEventoVM extends ObservableRecipient{
+        - servicioAzure : ServicioAzure
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        - filtrosRuta : String
+        - eventoAEditar : Evento
+        - fecha : DateTime
+        + DialogoEditarEventoVM()
+        + EditaEvento()
+        + CamposCorrectos()
+        + ExaminarImagen()
+    }
+    class DialogoEliminarEventoVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + DialogoEliminarEventoVM()
+        + EliminaEvento()
+    }
+    class DialogoEliminarPrestamoInterbibliotecarioVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - prestamoAEliminar : PrestamoInterbibliotecario
+        - api : ApiService
+        + DialogoEliminarPrestamoInterbibliotecarioVM()
+        + EliminaPrestamo()
+    }
+    class DialogoSolicitarLibroVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - resultadoSeleccionado : Item
+        - api : ApiService
+        + Imagen : String
+        + Titulo : String
+        + Isbn : String
+        + DialogoSolicitarLibroVM()
+        + Solicita()
+    }
+    class DialogoEliminarPrestamoInterbibliotecarioVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - prestamoAFinalizar : PrestamoInterbibliotecario
+        - api : ApiService
+        + DialogoFinalizarPrestamoInterbibliotecarioVM()
+        + FinalizaPrestamo()
+    }
+    class DialogoCreaLibroVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - libroACrear : Libros
+        - filtrosRuta : String
+        - api : ApiService
+        + Imagen : String
+        + Titulo : String
+        + Isbn : String
+        + Autores : String
+        + Categorias : String
+        + Descripcion : String
+        + resultadoSeleccionado : Item
+        + ListaResultados : List<Item>
+        + Idioma : String
+        + Editorial : String
+        + PalabraABuscar : String
+        + Anyo : Integer
+        + Paginas : Integer
+        - apiExterna : ExternalApiService
+        + DialogoCreaLibroVM()
+        + LimpiaFormulario()
+        + BuscaLibros()
+        + CreaLibro()
+        + CamposCorrectos()
+        + ExaminarImagen()
+    }
+    class DialogoCreaPrestamoVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + LibroSeleccionado : Libros
+        + SocioSeleccionado : Socio
+        - filtrosRuta : String
+        - api : ApiService
+        + Dni : String
+        + PrestamoACrear : Prestamo
+        + DialogoCreaPrestamoVM()
+        + BuscaSocio()
+        + CreaPrestamo()
+    }
+    class DialogoCreaReservaVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + LibroSeleccionado : Libros
+        + SocioSeleccionado : Socio
+        - filtrosRuta : String
+        - api : ApiService
+        + Dni : String
+        + ReservaACrear : Reserva
+        + DialogoCreaReservaVM()
+        + BuscaSocio()
+        + CreaReserva()
+    }
+    class DialogoCreaReservaVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + libroAEditar : Libros
+        - filtrosRuta : String
+        + Imagen : String
+        + DialogoEditaLibroVM()
+        + EditaLibro()
+        + CamposCorrectos()
+        + ExaminarImagen()
+    }
+    class DialogoEliminarLibroVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + libroAEliminar : Libros
+        + Unidades : Integer
+        + DialogoEliminarLibroVM()
+        + EliminarLibro()
+        - DeleteApi()
+    }
+    class ListadoLibrosVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + api : ApiService
+        + unidadesDisponiblesTextBlock : String
+        + unidadesReservadasTextBlock : String
+        + unidadesTotalesTextBlock : String
+        + libroSeleccionado : Libros
+        + libros : ObservableCollection<Libros>
+        + BotonEliminarUnidadLibroEnabled : Boolean
+        + BotonPrestamoEnabled : Boolean
+        + BotonReservaEnabled : Boolean
+        + BotonEliminarLibroEnabled : Boolean
+        + ElementoSeguridadApi : ElementoSeguridad
+        + QuitarSeleccionLibroCommand : RelayCommand
+        + RefrescaListaCommand : RelayCommand
+        + AddLibroCommand : RelayCommand
+        + AddPrestamoCommand : RelayCommand
+        + AddReservaCommand : RelayCommand
+        + EditarLibroCommand : RelayCommand
+        + EliminarLibroCommand : RelayCommand
+        + BuscarLibroCommand : RelayCommand
+        + RestaUnidadCommand : RelayCommand
+        + SumaUnidadCommand : RelayCommand
+        - ListadoLibrosVM()
+        - QuitarSeleccion()
+        - QuitarSeleccion()
+        - ActualizaUnidades()
+        - SumaUnidad()
+        - RestaUnidad()
+        - AddLibro()
+        - AddPrestamo()
+        - AddReserva()
+        - EditaLibro()
+        - EliminaLibro()
+    }
+    class DialogoEliminarPrestamoVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + prestamoAEliminar : GridPrestamos
+        + Unidades : Integer
+        + DialogoEliminarPrestamoVM()
+        + EliminaPrestamo()
+    }
+    class DialogoFinalizarPrestamoVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + prestamoAFinalizar : GridPrestamos
+        + Unidades : Integer
+        + DialogoFinalizarPrestamoVM()
+        + EliminaPrestamo()
+    }
+    class PrestamosUserControlVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + prestamoSeleccionado : GridPrestamos
+        + elementoSeguridadApi : ElementoSeguridad
+        + ListaPrestamosGrid : ObservableCollection<GridPrestamos>
+        + QuitarSeleccionPrestamoCommand : RelayCommand
+        + RefrescaListaCommand : RelayCommand
+        + FinalizarPrestamoCommand : RelayCommand
+        + EliminarPrestamoCommand : RelayCommand
+        + PrestamosUserControlVM()
+        + EliminaPrestamo()
+        - QuitarSeleccion()
+        - RefrescaLista()
+        - FinalizaPrestamo()
+        - EliminaPrestamo()
+    }
+    class ReservasUserControlVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + prestamoSeleccionado : GridReservas
+        + elementoSeguridadApi : ElementoSeguridad
+        + ListaReservas : ObservableCollection<GridReservas>
+        + QuitarSeleccionReservaCommand : RelayCommand
+        + RefrescaListaCommand : RelayCommand
+        + FinalizarReservaCommand : RelayCommand
+        + EliminarReservaCommand : RelayCommand
+        + ReservasUserControlVM()
+        - EliminaReserva()
+        - QuitarSeleccion()
+        - RefrescaLista()
+        - FinalizaReserva()
+    }
+    class DialogoFinalizarReservaVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + reservaAFinalizar : GridReservas
+        + elementoSeguridadApi : ElementoSeguridad
+        + DialogoFinalizarReservaVM()
+        + FinalizaReserva()
+    }
+    class DialogoEliminarReservaVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + reservaAEliminar : GridReservas
+        + elementoSeguridadApi : ElementoSeguridad
+        + DialogoEliminarReservaVM()
+        + EliminaReserva()
+    }
+    class DialogoAddSocioVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + libroAEditar : Libros
+        - filtrosRuta : String
+        - Fecha : DateTime
+        - SocioNuevo : Socio
+        + Imagen : String
+        - api : ApiService
+        + elementoSeguridadApi : ElementoSeguridad
+        + DialogoAddSocioVM()
+        + EliminaReserva()
+        + ExaminaSocio()
+        + AddSocio()
+        - GetBase64StringForImage()
+        - CamposCorrectos()
+    }
+    class DialogoEliminarSocioVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - SocioAEliminar : Socio
+        - api : ApiService
+        + DialogoEliminarSocioVM()
+        + EliminarSocio()
+    }
+    class DialogoRestablecerPassVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + SocioAEditar : Socio
+        + DialogoRestablecerPassVM()
+        + RestablecePassword()
+    }
+    class EditarSocioWindowVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        + libroAEditar : Libros
+        - filtrosRuta : String
+        - Fecha : DateTime
+        - SocioAEditar : Socio
+        + Imagen : String
+        - api : ApiService
+        + elementoSeguridadApi : ElementoSeguridad
+        + EditarSocioWindowVM()
+        + EliminaReserva()
+        + ExaminaSocio()
+        + EditaSocio()
+        + RestablecePassword()
+        - GetBase64StringForImage()
+        - CamposCorrectos()
+    }
+    class SociosUserControlVM extends ObservableRecipient{
+        - servicioDialogos : ServicioDialogos
+        - api : ApiService
+        + socioSeleccionado : Socio
+        + ListaSocios : ObservableCollection<Socio>
+        + elementoSeguridadApi : ElementoSeguridad
+        + ListaReservas : ObservableCollection<GridReservas>
+        + EliminarSocioCommand : RelayCommand
+        + RefrescaListaCommand : RelayCommand
+        + AddSocioCommand : RelayCommand
+        + EditarSocioCommand : RelayCommand
+        + SociosUserControlVM()
+        - RefrescaLista()
+        - AddSocio()
+        - EditaSocio()
+        - EliminaSocio()
+    }
+    class InicioUserControlVM extends ObservableObject{
+        - api : ApiService
+        - BlockNotas : String
+        - Fecha : String
+        - NumeroEventos : Integer
+        - Timer : DispatcherTimer
+        - Timer : DispatcherTimer
+        - Time : String
+        - ListaEventos : ObservableCollection<Evento>
+        + GuardarNotas : RelayCommand
+        + EnviaCorreo : RelayCommand
+        + InicioUserControlVM()
+        - TimerTick()
+        - GuardaNotas()
+    }
+    class MainWindowVM extends ObservableObject{
+        - navigation : NavigationService
+        - ContenidoVentana : UserControl
+        + AbrirListaLibrosCommand : RelayCommand
+        + AbrirListaPrestamosCommand : RelayCommand
+        + AbrirListaReservasCommand : RelayCommand
+        + AbrirListaSociosCommand : RelayCommand
+        + AbrirListaEventosCommand : RelayCommand
+        + AbrirAyudaCommand : RelayCommand
+        + AbrirInicioCommand : RelayCommand
+        + AbrirInterbibliotecarioCommand : RelayCommand
+        + AbrirRegistroCommand : RelayCommand
+        + MainWindowVM()
+        - AbrirListaLibros()
+        - AbrirListaPrestamos()
+        - AbrirInterbibliotecario()
+        - AbrirRegistro()
+        - AbrirListaReservas()
+        - AbrirListaSocios()
+        - AbrirListaEventos()
+        - AbrirInicio()
+        - AbrirAyuda()
+    }
+}
+
+ApiService "1" *-d- "*" ElementoSeguridad 
+ApiService "*" *-d- "*" Socios 
+ApiService "*" *-d- "*" Libros 
+ApiService "*" *-d- "*" Libro 
+ApiService "*" *-d- "*" Evento 
+ApiService "1" *-d- "*" Mensaje 
+ApiService "1" *-d- "*" UnidadesLibros 
+ApiService "*" *-d- "*" Prestamo 
+ApiService "*" *-d- "*" PrestamoInterbibliotecario 
+ExternalApiService "1" *-d- "*" Root 
+ServicioMensajeria "1" *-u- "*" Socio 
+ServicioMensajeria "1" *-u- "*" Libros 
+ServicioMensajeria "1" *-u- "*" Prestamo 
+ServicioMensajeria "1" *-u- "*" Reserva 
+ServicioMensajeria "1" *-u- "*" GridPrestamos 
+ServicioMensajeria "1" *-u- "*" Reserva 
+ServicioMensajeria "1" *-u- "*" GridReservas 
+ServicioMensajeria "1" *-u- "*" Evento 
+ServicioMensajeria "1" *-u- "*" ElementoSeguridad 
+ServicioMensajeria "1" *-u- "*" Item 
+ServicioMensajeria "1" *-u- "*" PrestamoInterbibliotecario 
+AddEventoWindowVM "1" *-u- "*" Evento 
+AddEventoWindowVM "1" *-u- "*" ApiService 
+AddEventoWindowVM "1" *-u- "*" ServicioDialogos 
+AddEventoWindowVM "1" *-u- "*" ServicioAzure 
+DialogoEditarEventoVM "1" *-d- "*" ServicioAzure 
+DialogoEditarEventoVM "1" *-d- "*" ServicioDialogos 
+DialogoEditarEventoVM "1" *-d- "*" ApiService 
+DialogoEditarEventoVM "1" *-d- "*" Evento 
+DialogoEditarEventoVM "1" *-d- "*" Evento 
+DialogoEliminarEventoVM "1" *-d- "*" ServicioAzure 
+DialogoEliminarEventoVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarEventoVM "1" *-d- "*" ApiService 
+DialogoEliminarEventoVM "1" *-d- "*" Evento
+EventosUserControlVM "1" *-d- "*" ServicioAzure 
+EventosUserControlVM "1" *-d- "*" ServicioDialogos 
+EventosUserControlVM "1" *-d- "*" ApiService 
+EventosUserControlVM "1" *-d- "*" Evento
+DialogoEliminarPrestamoInterbibliotecarioVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarPrestamoInterbibliotecarioVM "1" *-d- "*" ApiService 
+DialogoEliminarPrestamoInterbibliotecarioVM "1" *-d- "*" Prestamo
+DialogoFinalizarPrestamoInterbibliotecarioVM "1" *-d- "*" ServicioDialogos 
+DialogoFinalizarPrestamoInterbibliotecarioVM "1" *-d- "*" ApiService 
+DialogoFinalizarPrestamoInterbibliotecarioVM "1" *-d- "*" Prestamo
+DialogoSolicitarLibroVM "1" *-d- "*" ServicioDialogos 
+DialogoSolicitarLibroVM "1" *-d- "*" ApiService 
+DialogoSolicitarLibroVM "1" *-d- "*" Prestamo
+PrestamoInterbibliotecarioVM "1" *-r- "*" ServicioDialogos 
+PrestamoInterbibliotecarioVM "1" *-r- "*" ApiService 
+PrestamoInterbibliotecarioVM "1" *-r- "*" PrestamoInterbibliotecario
+RegistroPrestamoInterbiblitoecarioVM "1" *-r- "*" ServicioDialogos 
+RegistroPrestamoInterbiblitoecarioVM "1" *-r- "*" ApiService 
+RegistroPrestamoInterbiblitoecarioVM "1" *-r- "*" PrestamoInterbibliotecario
+DialogoCreaLibroVM "1" *-d- "*" ServicioDialogos 
+DialogoCreaLibroVM "1" *-d- "*" ServicioAzure 
+DialogoCreaLibroVM "1" *-d- "*" ExternalApiService 
+DialogoCreaLibroVM "1" *-d- "*" ApiService 
+DialogoCreaLibroVM "1" *-d- "*" PrestamoInterbibliotecario
+DialogoCreaLibroVM "1" *-d- "*" Libros
+DialogoCreaLibroVM "1" *-d- "*" Item
+DialogoCreaLibroVM "1" *-d- "*" VolumeInfo
+DialogoCreaPrestamoVM "1" *-d- "*" ServicioDialogos 
+DialogoCreaPrestamoVM "1" *-d- "*" ServicioAzure 
+DialogoCreaPrestamoVM "1" *-d- "*" ApiService 
+DialogoCreaPrestamoVM "1" *-d- "*" Prestamo 
+DialogoCreaPrestamoVM "1" *-d- "*" Libros 
+DialogoCreaPrestamoVM "1" *-d- "*" Socio 
+DialogoCreaPrestamoVM "1" *-d- "*" ServicioDialogos 
+DialogoCreaPrestamoVM "1" *-d- "*" ServicioAzure 
+DialogoCreaPrestamoVM "1" *-d- "*" ApiService 
+DialogoCreaPrestamoVM "1" *-d- "*" Reserva 
+DialogoCreaPrestamoVM "1" *-d- "*" Libros 
+DialogoCreaPrestamoVM "1" *-d- "*" Socio 
+DialogoEditaLibroVM "1" *-d- "*" ServicioDialogos 
+DialogoEditaLibroVM "1" *-d- "*" ServicioAzure 
+DialogoEditaLibroVM "1" *-d- "*" ApiService 
+DialogoEditaLibroVM "1" *-d- "*" PrestamoInterbibliotecario
+DialogoEditaLibroVM "1" *-d- "*" Libros
+DialogoEliminarLibroVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarLibroVM "1" *-d- "*" ApiService 
+DialogoEliminarLibroVM "1" *-d- "*" Libros 
+ListadoLibrosVM "1" *-d- "*" ServicioDialogos 
+ListadoLibrosVM "1" *-d- "*" ApiService 
+ListadoLibrosVM "*" *-d- "*" Libros 
+ListadoLibrosVM "1" *-d- "*" ElementoSeguridad 
+DialogoEliminarPrestamoVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarPrestamoVM "1" *-d- "*" ApiService 
+DialogoEliminarPrestamoVM "1" *-d- "*" GridPrestamos 
+DialogoFinalizarPrestamoVM "1" *-d- "*" ServicioDialogos 
+DialogoFinalizarPrestamoVM "1" *-d- "*" ApiService 
+DialogoFinalizarPrestamoVM "1" *-d- "*" GridPrestamos 
+PrestamosUserControlVM "1" *-d- "*" ServicioDialogos 
+PrestamosUserControlVM "1" *-d- "*" ApiService 
+PrestamosUserControlVM "1" *-d- "*" GridPrestamos 
+PrestamosUserControlVM "1" *-d- "*" ElementoSeguridad 
+DialogoEliminarReservaVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarReservaVM "1" *-d- "*" ApiService 
+DialogoEliminarReservaVM "1" *-d- "*" Reserva 
+DialogoFinalizarReservaVM "1" *-d- "*" ServicioDialogos 
+DialogoFinalizarReservaVM "1" *-d- "*" ApiService 
+DialogoFinalizarReservaVM "1" *-d- "*" Reserva 
+ReservasUserControlVM "1" *-d- "*" ServicioDialogos 
+ReservasUserControlVM "1" *-d- "*" ApiService 
+ReservasUserControlVM "1" *-d- "*" Reserva 
+ReservasUserControlVM "1" *-d- "*" ElementoSeguridad 
+DialogoAddSocioVM "1" *-d- "*" ServicioDialogos 
+DialogoAddSocioVM "1" *-d- "*" ApiService 
+DialogoAddSocioVM "1" *-d- "*" Socio 
+DialogoAddSocioVM "1" *-d- "*" ElementoSeguridad 
+DialogoEliminarSocioVM "1" *-d- "*" ServicioDialogos 
+DialogoEliminarSocioVM "1" *-d- "*" ApiService 
+DialogoEliminarSocioVM "1" *-d- "*" Socio 
+DialogoEliminarSocioVM "1" *-d- "*" ElementoSeguridad 
+DialogoRestablecerPassVM "1" *-d- "*" ServicioDialogos 
+DialogoRestablecerPassVM "1" *-d- "*" ApiService 
+DialogoRestablecerPassVM "1" *-d- "*" Socio 
+DialogoRestablecerPassVM "1" *-d- "*" ElementoSeguridad 
+EditarSocioWindowVM "1" *-d- "*" ServicioDialogos 
+EditarSocioWindowVM "1" *-d- "*" ApiService 
+EditarSocioWindowVM "1" *-d- "*" Socio 
+EditarSocioWindowVM "1" *-d- "*" ElementoSeguridad 
+SociosUserControlVM "1" *-d- "*" ServicioDialogos 
+SociosUserControlVM "1" *-d- "*" ApiService 
+SociosUserControlVM "1" *-d- "*" Socio 
+SociosUserControlVM "1" *-d- "*" ElementoSeguridad 
+SociosUserControlVM "*" *-d- "*" Evento 
+SociosUserControlVM "1" *-d- "*" ApiService 
+MainWindowVM "1" *-d- "*" NavigationService 
+@enduml
