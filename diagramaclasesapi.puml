@@ -1,0 +1,412 @@
+@startuml ApiREST
+skinparam linetype ortho
+package clases{
+    class Eventos implements Serializable{
+        - descripcion: String
+        - fechaEvento: Date
+        - fechaPublicacion: Date
+        - idEvento: Integer
+        - imagen: String
+        - titulo: String
+    }
+    class GridPrestamos implements Serializable{
+        - dniSocio: String
+        - fechaDevolucion: Date
+        - fechaPrestamo: Date
+        - fechaTope: Date
+        - idLibro: Integer
+        - idPrestamo: Integer
+        - imagenPortada: String
+        - isbn: String
+        - nombreSocio: String
+        - tituloLibro: String
+    }
+    class GridReservas implements Serializable{
+        - dniSocio: String
+        - fechaReserva: Date
+        - finalizada: Boolean
+        - idLibro: Integer
+        - idReserva: Integer
+        - imagenPortada: String
+        - isbn: String
+        - nombreSocio: String
+        - tituloLibro: String
+    }
+    class Interbibliotecario implements Serializable{
+        - finalizada: Boolean
+        - idInterbibliotecario: Integer
+        - isbn: String
+        - titulo: String
+    }
+    class Libro implements Serializable{
+        - idLibro: Integer
+        - isbn: String
+        - disponible: Boolean
+        - reservado: Boolean
+        - libros: Libros
+        - prestamosCollection : Collection<Prestamos>
+        - reservasCollection : Collection<Reservas>
+    }
+    class Libros implements Serializable{
+        - anyoPublicacion: Integer
+        - autores: String
+        - categoria: String
+        - descripcion: String
+        - editorial: String
+        - idioma: String
+        - imagen: String
+        - isbn: String
+        - paginas: Integer
+        - subcategorias: String
+        - titulo: String
+        - libroCollection : Collection<Libro>
+    }
+    class Mensaje implements Serializable{
+        - mensaje: String
+    }
+    class Prestamos implements Serializable{
+        - fechaDevolucion: Date
+        - fechaPrestamo: Date
+        - fechaTope: Date
+        - idLibro: Integer
+        - libro : Libro
+        - socios : Socios
+        - idPrestamo: Integer
+        - idSocio: Integer
+    }
+
+    class Reservas implements Serializable{
+        - fechaReserva: Date
+        - finalizada: Boolean
+        - idReserva: Integer
+        - libroId: Integer
+        - idSocio: Socios
+        - notificacion: Boolean
+        - socioId: Integer
+        - idLibro : Libro
+    }
+    class Socios implements Serializable{
+        - apellidos: String
+        - categoriasInteres: String
+        - contrasenya: String
+        - correo: String
+        - direccion: String
+        - dni: String
+        - idSocio: Integer
+        - imagen: String
+        - nombre: String
+        - rol: String
+        - fechaNacimiento: Date
+        - telefono: Integer
+    }
+
+    class Usuario implements Serializable{
+        - username: String
+        - password: String
+        - rol: String
+    }
+}
+package utils{
+    class DateConverter{
+        + StringToDate(strFecha : String) : Date
+        + DateToString(strFecha : Date) : String
+    }
+    class JWT_Util{
+        - SECRET_KEY : String
+        + validateJWT(token: String, request: HttpServletRequest) : JsonObject
+        + getData(token : String, request: HttpServletRequest) : Response
+        + validaSocio(token : String, request: HttpServletRequest) : Boolean
+        + validaTrabajador(token : String, request: HttpServletRequest) : Boolean
+    }
+}
+package bibliapp{
+    class EventosJpaController implements Serializable{
+        + EventosJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(eventos: Eventos)
+        + edit(eventos: Eventos)
+        + destroy(id: Integer)
+        + findEventosEntities() : List<Eventos>
+        + findEventosEntities(maxResults : Integer,firstResult : Integer) : List<Eventos>
+        + findEventosEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Eventos>
+        + findEventos(id: Integer) : Eventos
+        + getEventosCount() : Integer
+        + deleteEventosJPQL(dao: EventosJpaController, id: Integer) : Integer
+    }
+    class InterbibliotecarioJpaController implements Serializable{
+        + InterbibliotecarioJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(interbibliotecario: Interbibliotecario)
+        + edit(interbibliotecario: Interbibliotecario)
+        + destroy(id: Integer)
+        + findInterbibliotecarioEntities() : List<Interbibliotecario>
+        + findInterbibliotecarioEntities(maxResults : Integer,firstResult : Integer) : List<Interbibliotecario>
+        + findInterbibliotecarioEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Interbibliotecario>
+        + findInterbibliotecario(id: Integer) : Interbibliotecario
+        + getInterbibliotecarioCount() : Integer
+    }
+    class LibroJpaController implements Serializable{
+        + LibroJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(libro: Libro)
+        + edit(libro: Libro)
+        + destroy(id: Integer)
+        + findLibroEntities() : List<Libro>
+        + findLibroEntities(maxResults : Integer,firstResult : Integer) : List<Libro>
+        + findLibroEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Libro>
+        + findLibro(id: Integer) : Libro
+        + getLibroCount() : Integer
+        + getLibroPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + getLibrosDisponiblesPrestamoPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + getLibrosReservadosPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + getLibroDisponibleReservaPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + getLibroDisponiblePrestamoPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + reservaLibro(dao: LibroJpaController, isbn: String, idLibro : Integer) : Integer
+        + libroEnPrestamo(dao: LibroJpaController, isbn: String, idLibro : Integer) : Integer
+        + getLibroDisponibleParaEliminarISBNNamedQuery(dao: LibroJpaController, isbn: String) : Libro
+        + eliminaUnidadesLibros(dao: LibroJpaController, isbn: String) : Integer
+        + eliminaUnidadLibros(dao: LibroJpaController, idLibro: Integer) : Integer
+        + existeLibroPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+        + existeLibroPorISBNNamedQuery(dao: LibroJpaController, isbn: String) : List<Libro>
+    }
+    class LibrosJpaController implements Serializable{
+        + LibrosJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(libros: Libros)
+        + edit(libros: Libros)
+        + destroy(id: Integer)
+        + findLibrosEntities() : List<Libros>
+        + findLibrosEntities(maxResults : Integer,firstResult : Integer) : List<Libros>
+        + findLibrosEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Libros>
+        + findLibros(id: Integer) : Libros
+        + getLibrosCount() : Integer
+        + buscaLibrosDisponibles(dao: LibrosJpaController) : List<Libros>
+        + buscaLibrosParaReservar(dao: LibrosJpaController) : List<Libros>
+        + updateLibroJPQL(dao: LibrosJpaController, isbn: String, libroAActualizar: Libros) : Integer
+    }
+    class PrestamosJpaController implements Serializable{
+        + PrestamosJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(prestamos: Prestamos)
+        + edit(prestamos: Prestamos)
+        + destroy(id: Integer)
+        + findPrestamosEntities() : List<Prestamos>
+        + findPrestamosEntities(maxResults : Integer,firstResult : Integer) : List<Prestamos>
+        + findPrestamosEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Prestamos>
+        + findPrestamos(id: Integer) : Prestamos
+        + getPrestamosCount() : Integer
+        + eliminaPrestamo(dao: PrestamosJpaController, id: Integer) : Integer
+        + prestamoNoFinalizadoJPQL(dao: PrestamosJpaController) : List<Prestamos>
+        + prestamoNoFinalizadoPorFechaJPQL(dao: PrestamosJpaController, fecha: String) : List<Prestamos>
+        + buscaPrestamoPorSocioJPQL(dao: PrestamosJpaController, idSocio: Integer) : List<Prestamos>
+        + updateLibroJPQL(dao: PrestamosJpaController, isbn: String, libroAActualizar: Prestamos) : List<Prestamos>
+    }
+    class ReservasJpaController implements Serializable{
+        + ReservasJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(reservas: Reservas)
+        + edit(reservas: Reservas)
+        + destroy(id: Integer)
+        + findReservasEntities() : List<Reservas>
+        + findReservasEntities(maxResults : Integer,firstResult : Integer) : List<Reservas>
+        + findReservasEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Reservas>
+        + findReservas(id: Integer) : Reservas
+        + getReservasCount() : Integer
+        + buscaReservasNoFinalizadasPorSocioJPQL(dao: ReservasJpaController, idSocio: Integer) : List<Reservas>
+        + quitaNotificationJPQL(dao: ReservasJpaController, idReserva: Integer) : Integer
+        + poneNotificationJPQL(dao: ReservasJpaController, idReserva: Integer) : Integer
+        + buscaReservasPorSocioJPQL(dao: ReservasJpaController, idSocio: Integer) : List<Reservas>
+    }
+    class SociosJpaController implements Serializable{
+        + SociosJpaController(emf: EntityManagerFactory)
+        - emf : EntityManagerFactory
+        + getEntityManager() : EntityManager
+        + create(socios: Socios)
+        + edit(socios: Socios)
+        + destroy(id: Integer)
+        + findSociosEntities() : List<Socios>
+        + findSociosEntities(maxResults : Integer,firstResult : Integer) : List<Socios>
+        + findSociosEntities(all: Boolean, maxResults: Integer, firstResult: Integer) : List<Socios>
+        + findSocios(id: Integer) : Socios
+        + getSociosCount() : Integer
+        + validaContrasenya(socio: Socio, passwordAComparar: String) : Boolean
+        + hash(password: String) : String
+        + resetContrasenyaJPQL(dao: SociosJpaController, dni: String) : Integer
+        + compruebaSocio(dao: SociosJpaController, usuario: Usuario) : List<Socios>
+        + updateContrasenyaJPQL(dao: SociosJpaController, dni: String, newPassword: String, oldPassword: String) : Integer
+        + updateSocioCorreoJPQL(dao: SociosJpaController, correo: String, id: Integer) : Integer
+        + updateSocioCategoriasJPQL(dao: SociosJpaController, categorias: String, id: Integer) : Integer
+        + updateSocioImagenJPQL(dao: SociosJpaController, imagen: String, id: Integer) : Integer
+        + deleteSocioJPQL(dao: SociosJpaController, idSocio: Integer) : Integer
+    }
+}
+package apirest{
+    class ApplicationConfig extends Application{
+        + getClasses(): Set<Class<?>>
+        - addRestResourceClasses(resources: Set<Class<?>>)
+    }
+    class ServiceRESTAuthJWT{
+        - httpRequest: HttpServletRequest
+        - SECRET_KEY: String
+        - APPNAME: String
+        - ISSUER: String
+        - EXPIRATION_MINUTES: Integer
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getSession(): Response
+        + getData(): Response
+        + validar(usuario: Usuario): Response
+        + postLogout(): Response
+        + postDestroy(): Response
+        + getText(token: String): Response
+    }
+    class ServiceRESTEventos{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getSession(): Response
+        + getAll(): Response
+        + putEvento(eventoAEditar: Eventos, token: String): Response
+        + postEvento(eventoAEditar: Eventos, token: String): Response
+        + deleteEvento(idEvento: Integer, token: String): Response
+        + getEventoDestacado(fecha: Srting): Response
+    }
+    class ServiceRESTInterbibliotecario{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getSession(): Response
+        + getAll(token: String): Response
+        + creaInterbibliotecario(prestamoACrear: Interbibliotecario, token: String): Response
+        + editaInterbibliotecario(prestamoACrear: Interbibliotecario, token: String): Response
+        + deleteInterbibliotecario(id: Integer, token: String): Response
+    }
+    class ServiceRESTLibro{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getAll(): Response
+        + getAllPorId(isbn: String): Response
+        + getDisponiblesPrestamoPorId(isbn: String): Response
+        + getUdLibroIsbn(isbn: String): Response
+        + getLibroDisponibleBorrar(isbn: String): Response
+        + getReservadosPrestamoPorId(isbn: String): Response
+        + getLibroReservaPorISBN(isbn: String): Response
+        + getLibroPrestamoPorISBN(isbn: String): Response
+        + marcaDisponible(id: Integer): Response
+        + marcaReservaDisponible(id: Integer): Response
+        + marcaReservaNoDisponible(id: Integer): Response
+        + marcaNoDisponible(id: Integer): Response
+        + finalizaReserva(id: Integer, token: String): Response
+        + postLibro(isbn: String, token: String): Response
+        + putLibro(libroAEditar: Libro, token: String): Response
+        + eliminaUnidadLibroPorISBN(isbn: String, token: String): Response
+        + eliminaLibroPorISBN(isbn: String, token: String): Response
+        + eliminaLibro(id: Integer, token: String): Response
+    }
+    class ServiceRESTLibros{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getAll(): Response
+        + getAllId(id: Integer): Response
+        + getSession(): Response
+        + getLibroIsbn(isbn: String): Response
+        + getLibroTodo(palabra: String): Response
+        + getLibroTitulo(titulo: String): Response
+        + getLibroAutores(autores: String): Response
+        + getLibroEditorial(editorial: String): Response
+        + getLibroAnyoPublicacion(anyo: Integer): Response
+        + getLibroCategorias(categoria: String): Response
+        + getLibrosDisponiblesPalabra(palabra: String): Response
+        + getLibrosDisponibles(): Response
+        + getLibrosDisponiblesReservar(): Response
+        + putLibro(libroAEditar: Libros, token: String): Response
+        + postLibro(libroACrear: Libros, token: String): Response
+        + deleteLibro(isbn: String, token: String): Response
+    }
+    class ServiceRESTPrestamos{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getAll(token: String): Response
+        + getAllGrid(token: String): Response
+        + getSession(): Response
+        + getNoFinalizados(token: String): Response
+        + getPrestamosSocio(token: String, idSocio: String): Response
+        + getPrestamosNoFinalizadoSocio(token: String, idSocio: String): Response
+        + postPrestamo(prestamo: Prestamo, token: String, idSocio: String, idLibro: Integer): Response
+        + finalizaPrestamo(idPrestamo: Integer, token: String): Response
+    }
+    class ServiceRESTReservas{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getAll(token: String): Response
+        + getAllGrid(token: String): Response
+        + getSession(): Response
+        + getReservaSocio(token: String, idSocio: String): Response
+        + getNoFinalizada(token: String, idSocio: String): Response
+        + putReservas(reservaAEditar: Reservas, idSocio: String): Response
+        + quitaNotificacionReserva(reservaAEditar: Reservas, idReserva: String): Response
+        + poneNotificacionReserva(reservaAEditar: Reservas, idReserva: String): Response
+        + postReservasPath(reservaAEditar: Reservas,idSocio: Integer, idLibro: Integer, idReserva: String): Response
+        + postReservas(reservaAEditar: Reservas, token: String): Response
+        + finalizaReserva(idReserva: Integer, idLibro: Integer, token: String): Response
+        + finalizaReserva(idReserva: Integer, token: String): Response
+    }
+    class ServiceRESTSocios{
+        - httpRequest: HttpServletRequest
+        - PERSISTENCE_UNIT: String
+        - context: UriInfo
+        + getAllSocios(token: String): Response
+        + getSocioId(token: String, id: Integer): Response
+        + getSocioDni(token: String, dni: String): Response
+        + postSocio(token: String, socio: Socios): Response
+        + putSocio(token: String, socio: Socios): Response
+        + reseteaPassword(token: String, idSocio: Integer): Response
+        + putContrasenya(token: String, dni: String, newPass: String, oldPass: String): Response
+        + putEmail(token: String, correo: String): Response
+        + putCategorias(token: String, categorias: String, id: Integer): Response
+        + putImagen(token: String, imagen: String, id: Integer): Response
+        + deleteSocio(token: String, id: Integer): Response
+    }
+}
+
+ServiceRESTSocios "*" *-d- "*" Socios 
+ServiceRESTSocios "1" *-u- "*" JWT_Util 
+ServiceRESTPrestamos "*" *-d- "*" Prestamos
+ServiceRESTPrestamos "1" *-u- "*" JWT_Util 
+ServiceRESTReservas "*" *-d- "*" Reservas 
+ServiceRESTReservas "1" *-u-"*" JWT_Util 
+ServiceRESTLibros "*" *-d- "*" Libros 
+ServiceRESTLibros "1" *-d- "*" JWT_Util 
+ServiceRESTLibro "*" *-d- "*" Libro
+ServiceRESTLibro "1" *-u- "*" JWT_Util
+ServiceRESTAuthJWT "1" *-u- "*" JWT_Util
+ServiceRESTAuthJWT "1" *-d- "*" Usuario
+ServiceRESTAuthJWT "1" *-d- "*" Socios
+ServiceRESTEventos "*" *-d- "*" Eventos
+ServiceRESTEventos "*" *-u- "*" JWT_Util
+ServiceRESTInterbibliotecario "*" *-d- "*" Interbibliotecario
+ReservasJpaController "*" *-d- "*" Reservas
+ReservasJpaController "*" *-d- "*" Socios
+InterbibliotecarioJpaController "*" *-d- "*" Interbibliotecario
+EventosJpaController "*" *-d- "*" Eventos
+LibroJpaController "*" *-d- "*" Libro
+LibrosJpaController "*" *-d- "*" Libros
+LibrosJpaController "*" *-d- "*" Libro
+LibroJpaController "*" *-d- "*" Socios
+LibroJpaController "*" *-d- "*" Prestamos
+LibroJpaController "*" *-d- "*" Reservas
+PrestamosJpaController "*" *-d- "*" Prestamos
+PrestamosJpaController "*" *-d- "*" Socios
+ReservasJpaController "*" *-d- "*" Socios
+ReservasJpaController "*" *-d- "*" Reservas
+@enduml
